@@ -1,0 +1,76 @@
+.events .events-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    cursor: pointer;
+    /* Adjust spacing */
+}
+
+.events .event-card {
+    flex: 0 0 calc(33.333% - 16px);
+    /* 3 cards per row */
+    max-width: calc(33.333% - 16px);
+}
+
+@media (max-width: 992px) {
+    .events .event-card {
+        flex: 0 0 calc(50% - 16px);
+        /* 2 cards per row on medium screens */
+        max-width: calc(50% - 16px);
+    }
+}
+
+@media (max-width: 600px) {
+    .events .event-card {
+        flex: 0 0 100%;
+        /* 1 card per row on small screens */
+        max-width: 100%;
+    }
+}
+
+.no-events-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+    padding: 2rem;
+}
+
+.no-events-content {
+    max-width: 500px;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.no-events-icon {
+    animation: pulse 2s infinite;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}

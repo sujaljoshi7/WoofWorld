@@ -1,0 +1,17 @@
+input:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    /* Optional: Add a custom border */
+}
+
+
+.social-icons:hover {
+    animation: pop 0.3s linear 1;
+}
+
+@keyframes pop {
+    50% {
+        transform: scale(1.2);
+    }
+}
