@@ -5,6 +5,14 @@ import calender from "../../assets/images/icons/calendar.png";
 import location_pin from "../../assets/images/icons/location.png";
 import "../../styles/Home.css";
 import { handleTokenRefresh } from "../../hooks/tokenRefresh";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectFade } from "swiper/modules";
+
+import "swiper/css/effect-fade";
+import { Navigation, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 import LoadingScreen from "../../components/LoadingScreen";
 import Navbar from "../../components/common/Navbar";
@@ -48,6 +56,35 @@ function Home() {
   const [searchResults, setSearchResults] = useState(null);
   const searchTimeoutRef = useRef(null);
   const searchResultsRef = useRef(null);
+  const slideStyle = {
+    background: "#eee",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "224px",
+    height: "100%",
+  };
+  const swiperRef = useRef(null);
+
+  useEffect(() => {
+    if (swiperRef.current) {
+      new Swiper(swiperRef.current, {
+        modules: [Navigation, Pagination],
+        loop: true,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      });
+
+      const style = window.getComputedStyle(swiperRef.current);
+      console.log("Swiper background color:", style.backgroundColor);
+    }
+  }, []);
 
   // Generic fetch function to reduce code duplication
   const fetchData = async (endpoint, filterFn, stateKey) => {
@@ -379,29 +416,6 @@ function Home() {
                       {data.partnerCompanies.map((company, index) => (
                         <div
                           key={`first-${index}`}
-                          className="partner-logo-item"
-                        >
-                          <img
-                            title={company.name}
-                            src={company.image}
-                            alt="Company Logo"
-                            className="img-fluid"
-                            style={{
-                              height: "100px",
-                              width: "auto",
-                              minWidth: "150px",
-                              objectFit: "contain",
-                              padding: "0 40px",
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    {/* Duplicate set for seamless transition */}
-                    <div className="partner-logos">
-                      {data.partnerCompanies.map((company, index) => (
-                        <div
-                          key={`second-${index}`}
                           className="partner-logo-item"
                         >
                           <img

@@ -15,11 +15,16 @@ import master from "../../assets/images/icons/master.png";
 import visa from "../../assets/images/icons/visa.png";
 import upi from "../../assets/images/icons/upi.webp";
 import animated_dog from "../../assets/images/icons/animated-dog.gif";
+
+import LoadingIndicator from "./LoadingIndicator";
 import "../../styles/Footer.css";
 
 const Footer = () => {
   const [navbarItems, setNavbarItems] = useState([]);
   const location = useLocation();
+  const [userEmail, setUserEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const fetchNavbarItems = async () => {
@@ -51,8 +56,85 @@ const Footer = () => {
     }, []);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await api.post(
+        `/api/newsletter/`,
+        {
+          email: userEmail,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      setSubmitted(true);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (submitted) {
+      setLoading(false);
+      const modal = new window.bootstrap.Modal(
+        document.getElementById("exampleModal")
+      );
+      modal.show();
+
+      const timer = setTimeout(() => {
+        modal.hide();
+        setSubmitted(false);
+      }, 5000); // Auto-close in 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [submitted]);
+
   return (
     <footer className="text-dark py-3" style={{ backgroundColor: "#ffec00" }}>
+      {submitted && (
+        <div
+          className="modal fade modal-lg"
+          id="exampleModal"
+          tabIndex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div
+              className="modal-content"
+              style={{
+                backgroundColor: "#fffaf0",
+                border: "2px solid #ffa500",
+                borderRadius: "10px",
+              }}
+            >
+              <div className="modal-body text-center p-4">
+                <h2 style={{ color: "#ff7f50", fontWeight: "bold" }}>
+                  🐶 Welcome to the Bark Side!
+                </h2>
+                <p
+                  style={{
+                    fontSize: "1.1rem",
+                    marginTop: "10px",
+                    color: "#333",
+                  }}
+                >
+                  We’ve got <strong>biscuits</strong>,{" "}
+                  <strong>belly rubs</strong>, and <strong>newsletters</strong>{" "}
+                  coming your way.
+                </p>
+                <p style={{ fontStyle: "italic", color: "#666" }}>
+                  Thanks for joining the WoofWorld pack!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="container">
         <div className="row">
           {/* Left Section (30%) - Branding */}
@@ -131,14 +213,29 @@ const Footer = () => {
                   <p className="text-muted">
                     Get the latest updates on dog care, adoption, and events.
                   </p>
-                  <div className="d-flex justify-content-center">
+                  <form
+                    className="d-flex justify-content-center"
+                    onSubmit={handleSubmit}
+                  >
                     <input
                       type="email"
                       className="form-control w-100 p-2"
                       placeholder="Enter your email"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
                     />
-                    <button className="btn btn-dark ms-2">Subscribe</button>
-                  </div>
+                    <div className="d-grid text-center">
+                      {loading ? (
+                        <div className="d-flex justify-content-center">
+                          <LoadingIndicator />
+                        </div>
+                      ) : (
+                        <button type="submit" className="btn btn-dark ms-2">
+                          Subscribe
+                        </button>
+                      )}
+                    </div>
+                  </form>
                 </div>
               </div>
 

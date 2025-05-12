@@ -290,6 +290,11 @@ const Navbar = ({ initialSearchQuery = "" }) => {
                 About us
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link active" to="/about">
+                Contact
+              </Link>
+            </li>
           </ul>
         </div>
       </nav>

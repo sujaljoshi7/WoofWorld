@@ -86,6 +86,8 @@ INSTALLED_APPS = [
     'order',
     'search',
     'notifications',
+    'newsletter',
+    'contact',
     'rest_framework',
     'corsheaders',
     'cloudinary',

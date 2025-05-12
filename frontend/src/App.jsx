@@ -28,6 +28,7 @@ import SearchResults from "./pages/search/SearchResults";
 import Services from "./pages/services/Services";
 import ServiceDetails from "./pages/services/ServiceDetails";
 import PastEventDetails from "./pages/events/PastEventDetails";
+import Contact from "./pages/contact/Contact";
 
 function Logout() {
   localStorage.clear();
@@ -83,6 +84,7 @@ function App() {
         <Route path="/shop/product/:id" element={<ProductDetail />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<ComingSoon />}></Route>
       </Routes>
     </BrowserRouter>

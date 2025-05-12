@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView
 import random
 from django.utils.timezone import now
-from datetime import timedelta
+from datetime import timedelta, datetime
 from otp.models import OTPModel
 from otp.views import send_otp
 from django.core.mail import send_mail
@@ -23,6 +23,13 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
+from .utils import send_email_to_client, send_reset_link_email
+import logging
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
 
 def check_email(request, email):
@@ -316,3 +323,48 @@ def send_password_reset_email(email, reset_token):
         print(f"Error sending password reset email: {str(e)}")
         return False
 
+logger = logging.getLogger(__name__)
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def send_otp(request):  # You may want to rename this to `send_reset_link`
+    try:
+        email = request.data.get("email")
+
+        if not email:
+            return Response({"error": "Email is required"}, status=400)
+
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response({"error": "Invalid email format"}, status=400)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "User with this email does not exist"}, status=404)
+
+        # Generate token and uid
+        token = default_token_generator.make_token(user)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Construct password reset link (adjust the URL to your frontend)
+        reset_link = f"localhost:3001/reset-password/{uid}/{token}/"
+
+        logger.info(f"Generated reset link for {email}: {reset_link}")
+
+        # Send the email
+        try:
+            if send_reset_link_email(email, reset_link):
+                logger.info(f"Password reset email sent to {email}")
+                return Response({"message": "Password reset link sent successfully"}, status=200)
+            else:
+                logger.warning(f"Failed to send password reset email to {email}")
+                return Response({"error": "Failed to send password reset email"}, status=500)
+        except Exception as email_error:
+            logger.exception("Error sending password reset email")
+            return Response({"error": "Failed to send password reset email"}, status=500)
+
+    except Exception as e:
+        logger.exception("Unexpected error in send_otp")
+        return Response({"error": "An unexpected error occurred"}, status=500)
